@@ -1,0 +1,19 @@
+name: Notify Docker Repo
+
+on:
+  push:
+    branches:
+      - voia
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger docker repo update
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+            https://api.github.com/repos/teamvoia/ayon-docker/dispatches \
+            -d '{"event_type":"submodule-updated","client_payload":{"repo":"${{ github.repository }}","ref":"${{ github.ref }}"}}'

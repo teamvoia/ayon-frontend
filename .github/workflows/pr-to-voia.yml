@@ -1,0 +1,48 @@
+name: Create PR to Voia
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      
+      - name: Check if voia branch exists
+        id: check_branch
+        run: |
+          git fetch origin voia || echo "branch_exists=false" >> $GITHUB_OUTPUT
+          if git rev-parse --verify origin/voia; then
+            echo "branch_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "branch_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Pull Request
+        if: steps.check_branch.outputs.branch_exists == 'true'
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: main
+          destination_branch: voia
+          pr_title: "Sync upstream changes to voia"
+          pr_body: |
+            This PR syncs the latest changes from the upstream `main` branch into `voia`.
+            
+            **Changes included:**
+            - Latest updates from ynput upstream repository
+            
+            Please review and merge if tests pass.
+            
+            ---
+            *This PR was automatically created by GitHub Actions*
+          pr_label: "upstream-sync,automated"

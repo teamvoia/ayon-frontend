@@ -1,0 +1,48 @@
+name: Sync from Upstream
+
+on:
+  schedule:
+    # Run Mon-Fri at 3 PM UTC (8 AM PST)
+    - cron: '0 15 * * 1-5'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Add upstream remote
+        run: |
+          # Determine upstream URL based on repo
+          if [[ "${{ github.repository }}" == *"ayon-docker"* ]]; then
+            UPSTREAM="https://github.com/ynput/ayon-docker.git"
+          elif [[ "${{ github.repository }}" == *"ayon-backend"* ]]; then
+            UPSTREAM="https://github.com/ynput/ayon-backend.git"
+          elif [[ "${{ github.repository }}" == *"ayon-frontend"* ]]; then
+            UPSTREAM="https://github.com/ynput/ayon-frontend.git"
+          fi
+          git remote add upstream $UPSTREAM
+      
+      - name: Fetch upstream
+        run: |
+          git fetch upstream main
+      
+      - name: Merge upstream into main
+        run: |
+          git merge upstream/main --no-edit
+      
+      - name: Push changes
+        run: |
+          git push origin main
