@@ -16,6 +16,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
       
       - name: Check if voia branch exists
         id: check_branch
@@ -31,7 +32,7 @@ jobs:
         id: check_pr
         if: steps.check_branch.outputs.branch_exists == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           PR_COUNT=$(gh pr list --head main --base voia --state open --json number --jq length)
           echo "pr_exists=$PR_COUNT" >> $GITHUB_OUTPUT
@@ -44,7 +45,7 @@ jobs:
         if: steps.check_branch.outputs.branch_exists == 'true' && steps.check_pr.outputs.pr_exists == '0'
         uses: repo-sync/pull-request@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT_TOKEN }}
           source_branch: main
           destination_branch: voia
           pr_title: "Sync upstream changes to voia"
