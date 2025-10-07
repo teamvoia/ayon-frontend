@@ -39,10 +39,29 @@ jobs:
         run: |
           git fetch upstream main
       
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet HEAD upstream/main; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Merge upstream into main
+        if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git merge upstream/main --no-edit
       
       - name: Push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git push origin main
+      
+      - name: Summary
+        run: |
+          if [[ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]]; then
+            echo "### ✅ Upstream changes synced to main" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ℹ️ No new changes from upstream" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -27,8 +27,21 @@ jobs:
             echo "branch_exists=false" >> $GITHUB_OUTPUT
           fi
       
-      - name: Create Pull Request
+      - name: Check for existing PR
+        id: check_pr
         if: steps.check_branch.outputs.branch_exists == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_COUNT=$(gh pr list --head main --base voia --state open --json number --jq length)
+          echo "pr_exists=$PR_COUNT" >> $GITHUB_OUTPUT
+          if [ "$PR_COUNT" -gt 0 ]; then
+            PR_NUMBER=$(gh pr list --head main --base voia --state open --json number --jq '.[0].number')
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create Pull Request
+        if: steps.check_branch.outputs.branch_exists == 'true' && steps.check_pr.outputs.pr_exists == '0'
         uses: repo-sync/pull-request@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -41,8 +54,19 @@ jobs:
             **Changes included:**
             - Latest updates from ynput upstream repository
             
-            Please review and merge if tests pass.
+            Please review and merge if no breaking changes
             
             ---
             *This PR was automatically created by GitHub Actions*
           pr_label: "upstream-sync,automated"
+      
+      - name: Summary
+        run: |
+          if [[ "${{ steps.check_branch.outputs.branch_exists }}" != "true" ]]; then
+            echo "### ⚠️ Voia branch does not exist" >> $GITHUB_STEP_SUMMARY
+          elif [[ "${{ steps.check_pr.outputs.pr_exists }}" == "0" ]]; then
+            echo "### ✅ New PR created to sync main → voia" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ℹ️ PR already exists (#${{ steps.check_pr.outputs.pr_number }})" >> $GITHUB_STEP_SUMMARY
+            echo "New commits from main will automatically appear in the existing PR." >> $GITHUB_STEP_SUMMARY
+          fi
