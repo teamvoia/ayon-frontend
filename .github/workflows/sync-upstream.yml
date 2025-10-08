@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: main  # Checkout main to sync it
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
       
@@ -24,8 +24,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
       - name: Add upstream remote
-        run: |
-          # Determine upstream URL based on repo
+        run: | # Determine upstream URL based on repo
           if [[ "${{ github.repository }}" == *"ayon-docker"* ]]; then
             UPSTREAM="https://github.com/ynput/ayon-docker.git"
           elif [[ "${{ github.repository }}" == *"ayon-backend"* ]]; then
@@ -57,6 +56,16 @@ jobs:
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git push origin main
+      
+      - name: Trigger pr-to-voia workflow
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/pr-to-voia.yml/dispatches \
+            -d '{"ref":"voia"}'
       
       - name: Summary
         run: |

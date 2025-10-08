@@ -1,10 +1,7 @@
 name: Create PR to Voia
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_dispatch:  # Only manual/API trigger
 
 jobs:
   create-pr:
