@@ -1,5 +1,5 @@
 import { createContext, useContext, FC, ReactNode, useState, useMemo, useCallback } from 'react'
-import { ViewType, viewTypes, WORKING_VIEW_ID } from '../index'
+import { ViewType, WORKING_VIEW_ID } from '../index'
 import {
   GetDefaultViewApiResponse,
   useGetWorkingViewQuery,
@@ -76,6 +76,7 @@ export interface ViewsContextValue {
   onCreateBaseView: (isStudioScope: boolean) => Promise<void>
   onUpdateBaseView: (baseViewId: string, isStudioScope: boolean) => Promise<void>
   onDeleteBaseView: (baseViewId: string, isStudioScope: boolean) => Promise<void>
+  onLoadBaseView: (isStudioScope: boolean) => Promise<void>
 
   // Actions (shared)
   resetWorkingView: () => Promise<void>
@@ -99,16 +100,11 @@ export interface ViewsProviderProps {
 
 export const ViewsProvider: FC<ViewsProviderProps> = ({
   children,
-  viewType: viewTypeProp,
+  viewType,
   projectName,
   dispatch,
   debug,
 }) => {
-  // validate viewType
-  const viewType = viewTypes.includes(viewTypeProp as ViewType)
-    ? (viewTypeProp as ViewType)
-    : undefined
-
   let { powerLicense } = usePowerpack()
   if (debug?.powerLicense !== undefined) {
     console.warn('Using debug power license:', debug.powerLicense)
@@ -231,10 +227,11 @@ export const ViewsProvider: FC<ViewsProviderProps> = ({
   })
 
   // Base view mutations
-  const { onCreateBaseView, onUpdateBaseView, onDeleteBaseView } = useBaseViewMutations({
+  const { onCreateBaseView, onUpdateBaseView, onDeleteBaseView, onLoadBaseView } = useBaseViewMutations({
     viewType: viewType as string,
     projectName,
     workingSettings,
+    workingView,
     dispatch,
   })
 
@@ -314,6 +311,7 @@ export const ViewsProvider: FC<ViewsProviderProps> = ({
     onCreateBaseView,
     onUpdateBaseView,
     onDeleteBaseView,
+    onLoadBaseView,
     editingViewId,
     viewMenuItems,
     isLoadingViews,
