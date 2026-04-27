@@ -31,16 +31,17 @@ import useExpandAndSelectNewFolders from './hooks/useExpandAndSelectNewFolders'
 import { QueryFilter } from '@shared/containers/ProjectTreeTable/types/operations'
 import DetailsPanelSplitter from '@components/DetailsPanelSplitter'
 import useGoToEntity from '../../hooks/useGoToEntity'
+import ImportDialogButton from '@containers/ImportDialog/ImportDialogButton'
 
 // Configure scope-specific filter types for the search filter
 const scopesConfig: ScopeWithFilterTypes[] = [
   {
     scope: 'task',
-    filterTypes: ['status', 'tags', 'taskType', 'assignees', 'attributes', 'name'],
+    filterTypes: ['status', 'tags', 'taskType', 'assignees', 'attributes', 'name', 'createdAt', 'updatedAt'],
   },
   {
     scope: 'folder',
-    filterTypes: ['status', 'tags', 'folderType', 'attributes', 'name'],
+    filterTypes: ['status', 'tags', 'folderType', 'attributes', 'name', 'createdAt', 'updatedAt'],
   },
 ]
 
@@ -104,13 +105,14 @@ const ProjectOverviewPage: FC = () => {
     ]
   }, [groupedFields])
 
-  const viewGroupByValue = useMemo(
-    () =>
-      viewGroupByOptions
-        .filter((o) => o.id === (viewGroupBy === 'none' ? undefined : viewGroupBy ?? 'hierarchy'))
-        .map((o) => ({ ...o, sortOrder: !viewGroupByDesc })),
-    [viewGroupBy, viewGroupByOptions, viewGroupByDesc],
-  )
+  const viewGroupByValue = useMemo(() => {
+    // undefined = view settings not loaded yet — keep dropdown empty so the
+    // user doesn't see a "Hierarchy" default flicker before the saved value arrives.
+    if (viewGroupBy === undefined) return []
+    return viewGroupByOptions
+      .filter((o) => o.id === (viewGroupBy === 'none' ? undefined : viewGroupBy ?? 'hierarchy'))
+      .map((o) => ({ ...o, sortOrder: !viewGroupByDesc }))
+  }, [viewGroupBy, viewGroupByOptions, viewGroupByDesc])
 
   const handleViewGroupByChange = (values: { id: string; sortOrder?: boolean }[]) => {
     const value = values[0]
@@ -227,6 +229,10 @@ const ProjectOverviewPage: FC = () => {
                 value={viewGroupByValue}
                 onChange={handleViewGroupByChange}
                 multiSelect={false}
+              />
+              <ImportDialogButton
+                importContext="hierarchy"
+                projectName={projectName}
               />
               <Actions
                 entities={[]}

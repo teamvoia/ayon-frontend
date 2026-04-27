@@ -26,7 +26,6 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
-  JSON: { input: any; output: any; }
 };
 
 export type ActivitiesConnection = {
@@ -45,6 +44,7 @@ export type ActivityCategory = {
 export type ActivityEdge = {
   __typename?: 'ActivityEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The activity node */
   node: ActivityNode;
 };
 
@@ -150,6 +150,7 @@ export type BaseNodeLinksArgs = {
 export type EntityListEdge = {
   __typename?: 'EntityListEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The entity list node */
   node: EntityListNode;
 };
 
@@ -229,6 +230,7 @@ export type EntityListsConnection = {
 export type EventEdge = {
   __typename?: 'EventEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** Event node */
   node: EventNode;
 };
 
@@ -295,6 +297,7 @@ export type FolderAttribType = {
 export type FolderEdge = {
   __typename?: 'FolderEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The folder node */
   node: FolderNode;
 };
 
@@ -334,10 +337,6 @@ export type FolderNode = BaseNode & {
   tasks: TasksConnection;
   thumbnail?: Maybe<ThumbnailInfo>;
   thumbnailId?: Maybe<Scalars['String']['output']>;
-  totalFolderCount: Scalars['Int']['output'];
-  totalProductCount: Scalars['Int']['output'];
-  totalTaskCount: Scalars['Int']['output'];
-  totalVersionCount: Scalars['Int']['output'];
   type: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   updatedBy?: Maybe<Scalars['String']['output']>;
@@ -445,6 +444,7 @@ export type KanbanConnection = {
 export type KanbanEdge = {
   __typename?: 'KanbanEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The kanban node */
   node: KanbanNode;
 };
 
@@ -479,7 +479,6 @@ export type LinkEdge = {
   __typename?: 'LinkEdge';
   author?: Maybe<Scalars['String']['output']>;
   cursor?: Maybe<Scalars['String']['output']>;
-  data: Scalars['JSON']['output'];
   description: Scalars['String']['output'];
   direction: Scalars['String']['output'];
   entityId: Scalars['String']['output'];
@@ -532,6 +531,7 @@ export type ProductBaseType = {
 export type ProductEdge = {
   __typename?: 'ProductEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** Product node */
   node: ProductNode;
 };
 
@@ -671,6 +671,7 @@ export type ProjectBundleType = {
 export type ProjectEdge = {
   __typename?: 'ProjectEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The project node */
   node: ProjectNode;
 };
 
@@ -1080,6 +1081,7 @@ export type RepresentationAttribType = {
 export type RepresentationEdge = {
   __typename?: 'RepresentationEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** Representation node */
   node: RepresentationNode;
 };
 
@@ -1196,6 +1198,7 @@ export type TaskAttribType = {
 export type TaskEdge = {
   __typename?: 'TaskEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The task node */
   node: TaskNode;
 };
 
@@ -1337,6 +1340,7 @@ export type UserAttribType = {
 export type UserEdge = {
   __typename?: 'UserEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The user node */
   node: UserNode;
 };
 
@@ -1404,6 +1408,7 @@ export type VersionAttribType = {
 export type VersionEdge = {
   __typename?: 'VersionEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** Version node */
   node: VersionNode;
 };
 
@@ -1506,6 +1511,7 @@ export type WorkfileAttribType = {
 export type WorkfileEdge = {
   __typename?: 'WorkfileEdge';
   cursor?: Maybe<Scalars['String']['output']>;
+  /** Workfile node */
   node: WorkfileNode;
 };
 
@@ -1715,14 +1721,6 @@ export type ListItemFragmentFragment =
   | ListItemFragment_WorkfileNode_Fragment
 ;
 
-export type GetFolderDeleteInfoQueryVariables = Exact<{
-  projectName: Scalars['String']['input'];
-  folderIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
-}>;
-
-
-export type GetFolderDeleteInfoQuery = { __typename?: 'Query', project: { __typename?: 'ProjectNode', folders: { __typename?: 'FoldersConnection', edges: Array<{ __typename?: 'FolderEdge', node: { __typename?: 'FolderNode', id: string, name: string, label?: string | null, totalFolderCount: number, totalTaskCount: number, totalProductCount: number, totalVersionCount: number } }> } } };
-
 export type GetTasksByParentQueryVariables = Exact<{
   projectName: Scalars['String']['input'];
   parentIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
@@ -1732,7 +1730,7 @@ export type GetTasksByParentQueryVariables = Exact<{
 }>;
 
 
-export type GetTasksByParentQuery = { __typename?: 'Query', project: { __typename?: 'ProjectNode', name: string, tasks: { __typename?: 'TasksConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'TaskNode', id: string, folderId: string, label?: string | null, name: string, ownAttrib: Array<string>, status: string, tags: Array<string>, taskType: string, updatedAt: any, createdAt: any, active: boolean, assignees: Array<string>, allAttrib: string, hasReviewables: boolean, parents: Array<string>, subtasks: Array<{ __typename?: 'SubTaskNode', id: string, name: string, label: string, assignees: Array<string>, description?: string | null, startDate?: any | null, endDate?: any | null, isDone: boolean }>, folder: { __typename?: 'FolderNode', folderType: string } } }> } } };
+export type GetTasksByParentQuery = { __typename?: 'Query', project: { __typename?: 'ProjectNode', name: string, tasks: { __typename?: 'TasksConnection', edges: Array<{ __typename?: 'TaskEdge', node: { __typename?: 'TaskNode', id: string, folderId: string, label?: string | null, name: string, ownAttrib: Array<string>, status: string, tags: Array<string>, taskType: string, updatedAt: any, createdAt: any, active: boolean, assignees: Array<string>, allAttrib: string, hasReviewables: boolean, parents: Array<string>, subtasks: Array<{ __typename?: 'SubTaskNode', id: string, name: string, label: string, assignees: Array<string>, description?: string | null, startDate?: any | null, endDate?: any | null, isDone: boolean }> } }> } } };
 
 export type GetTasksListQueryVariables = Exact<{
   projectName: Scalars['String']['input'];
@@ -1947,7 +1945,7 @@ export type GetTasksProgressQuery = { __typename?: 'Query', project: { __typenam
 
 export type ProgressTaskFragmentFragment = { __typename?: 'TaskNode', projectName: string, id: string, name: string, label?: string | null, taskType: string, status: string, assignees: Array<string>, updatedAt: any, active: boolean, hasReviewables: boolean, tags: Array<string>, attrib: { __typename?: 'TaskAttribType', priority?: string | null, endDate?: any | null, resolutionHeight?: number | null, resolutionWidth?: number | null, fps?: number | null }, folder: { __typename?: 'FolderNode', id: string, name: string, label?: string | null, folderType: string, parents: Array<string>, status: string, updatedAt: any, parent?: { __typename?: 'FolderNode', id: string, name: string, label?: string | null, parents: Array<string> } | null } };
 
-export const ActivityFragmentFragmentDoc = new TypedDocumentString(`
+export const ActivityFragmentFragmentDoc = `
     fragment ActivityFragment on ActivityNode {
   activityId
   activityType
@@ -1990,8 +1988,8 @@ export const ActivityFragmentFragmentDoc = new TypedDocumentString(`
     }
   }
 }
-    `, {"fragmentName":"ActivityFragment"});
-export const DetailsPanelFolderFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const DetailsPanelFolderFragmentFragmentDoc = `
     fragment DetailsPanelFolderFragment on FolderNode {
   id
   name
@@ -1999,8 +1997,8 @@ export const DetailsPanelFolderFragmentFragmentDoc = new TypedDocumentString(`
   path
   folderType
 }
-    `, {"fragmentName":"DetailsPanelFolderFragment"});
-export const DetailsPanelProductFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const DetailsPanelProductFragmentFragmentDoc = `
     fragment DetailsPanelProductFragment on ProductNode {
   id
   name
@@ -2009,15 +2007,15 @@ export const DetailsPanelProductFragmentFragmentDoc = new TypedDocumentString(`
     version
   }
 }
-    `, {"fragmentName":"DetailsPanelProductFragment"});
-export const DetailsPanelRepresentationFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const DetailsPanelRepresentationFragmentFragmentDoc = `
     fragment DetailsPanelRepresentationFragment on RepresentationNode {
   id
   name
   fileCount
 }
-    `, {"fragmentName":"DetailsPanelRepresentationFragment"});
-export const SubTaskFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const SubTaskFragmentFragmentDoc = `
     fragment SubTaskFragment on SubTaskNode {
   id
   name
@@ -2028,8 +2026,8 @@ export const SubTaskFragmentFragmentDoc = new TypedDocumentString(`
   endDate
   isDone
 }
-    `, {"fragmentName":"SubTaskFragment"});
-export const DetailsPanelTaskFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const DetailsPanelTaskFragmentFragmentDoc = `
     fragment DetailsPanelTaskFragment on TaskNode {
   id
   name
@@ -2040,17 +2038,8 @@ export const DetailsPanelTaskFragmentFragmentDoc = new TypedDocumentString(`
     ...SubTaskFragment
   }
 }
-    fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`, {"fragmentName":"DetailsPanelTaskFragment"});
-export const DetailsPanelVersionFragmentFragmentDoc = new TypedDocumentString(`
+    ${SubTaskFragmentFragmentDoc}`;
+export const DetailsPanelVersionFragmentFragmentDoc = `
     fragment DetailsPanelVersionFragment on VersionNode {
   id
   thumbnailId
@@ -2061,8 +2050,8 @@ export const DetailsPanelVersionFragmentFragmentDoc = new TypedDocumentString(`
   version
   author
 }
-    `, {"fragmentName":"DetailsPanelVersionFragment"});
-export const ListItemFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const ListItemFragmentFragmentDoc = `
     fragment ListItemFragment on BaseNode {
   active
   name
@@ -2127,17 +2116,8 @@ export const ListItemFragmentFragmentDoc = new TypedDocumentString(`
     }
   }
 }
-    fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`, {"fragmentName":"ListItemFragment"});
-export const TaskPropsFragmentFragmentDoc = new TypedDocumentString(`
+    ${SubTaskFragmentFragmentDoc}`;
+export const TaskPropsFragmentFragmentDoc = `
     fragment TaskPropsFragment on TaskNode {
   id
   folderId
@@ -2161,17 +2141,8 @@ export const TaskPropsFragmentFragmentDoc = new TypedDocumentString(`
     folderType
   }
 }
-    fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`, {"fragmentName":"TaskPropsFragment"});
-export const KanbanFragmentFragmentDoc = new TypedDocumentString(`
+    ${SubTaskFragmentFragmentDoc}`;
+export const KanbanFragmentFragmentDoc = `
     fragment KanbanFragment on KanbanNode {
   id
   projectName
@@ -2193,16 +2164,16 @@ export const KanbanFragmentFragmentDoc = new TypedDocumentString(`
   hasReviewables
   priority
 }
-    `, {"fragmentName":"KanbanFragment"});
-export const PageInfoFragmentDoc = new TypedDocumentString(`
+    `;
+export const PageInfoFragmentDoc = `
     fragment PageInfo on PageInfo {
   startCursor
   endCursor
   hasNextPage
   hasPreviousPage
 }
-    `, {"fragmentName":"PageInfo"});
-export const VersionBaseFragmentDoc = new TypedDocumentString(`
+    `;
+export const VersionBaseFragmentDoc = `
     fragment VersionBase on VersionNode {
   name
   id
@@ -2220,16 +2191,16 @@ export const VersionBaseFragmentDoc = new TypedDocumentString(`
   featuredVersionType
   heroVersionId
 }
-    `, {"fragmentName":"VersionBase"});
-export const VpFolderFragmentDoc = new TypedDocumentString(`
+    `;
+export const VpFolderFragmentDoc = `
     fragment VPFolder on FolderNode {
   id
   name
   label
   allAttrib
 }
-    `, {"fragmentName":"VPFolder"});
-export const VersionExtendedFragmentDoc = new TypedDocumentString(`
+    `;
+export const VersionExtendedFragmentDoc = `
     fragment VersionExtended on VersionNode {
   ...VersionBase
   task {
@@ -2250,30 +2221,9 @@ export const VersionExtendedFragmentDoc = new TypedDocumentString(`
     }
   }
 }
-    fragment VPFolder on FolderNode {
-  id
-  name
-  label
-  allAttrib
-}
-fragment VersionBase on VersionNode {
-  name
-  id
-  hasReviewables
-  parents
-  path
-  active
-  allAttrib
-  author
-  createdAt
-  status
-  tags
-  updatedAt
-  version
-  featuredVersionType
-  heroVersionId
-}`, {"fragmentName":"VersionExtended"});
-export const MessageFragmentFragmentDoc = new TypedDocumentString(`
+    ${VersionBaseFragmentDoc}
+${VpFolderFragmentDoc}`;
+export const MessageFragmentFragmentDoc = `
     fragment MessageFragment on ActivityNode {
   projectName
   activityId
@@ -2305,8 +2255,8 @@ export const MessageFragmentFragmentDoc = new TypedDocumentString(`
     label
   }
 }
-    `, {"fragmentName":"MessageFragment"});
-export const ProgressTaskFragmentFragmentDoc = new TypedDocumentString(`
+    `;
+export const ProgressTaskFragmentFragmentDoc = `
     fragment ProgressTaskFragment on TaskNode {
   projectName
   id
@@ -2342,8 +2292,8 @@ export const ProgressTaskFragmentFragmentDoc = new TypedDocumentString(`
     }
   }
 }
-    `, {"fragmentName":"ProgressTaskFragment"});
-export const GetActivitiesByIdDocument = new TypedDocumentString(`
+    `;
+export const GetActivitiesByIdDocument = `
     query GetActivitiesById($projectName: String!, $entityIds: [String!]!, $activityIds: [String!]) {
   project(name: $projectName) {
     name
@@ -2367,49 +2317,8 @@ export const GetActivitiesByIdDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment ActivityFragment on ActivityNode {
-  activityId
-  activityType
-  activityData
-  referenceType
-  referenceId
-  entityId
-  body
-  createdAt
-  updatedAt
-  author {
-    name
-    deleted
-    active
-    attrib {
-      fullName
-    }
-  }
-  files {
-    id
-    name
-    size
-    mime
-  }
-  origin {
-    id
-    name
-    label
-    type
-  }
-  reactions {
-    fullName
-    userName
-    reaction
-    timestamp
-  }
-  version {
-    attrib {
-      comment
-    }
-  }
-}`);
-export const GetActivityUsersDocument = new TypedDocumentString(`
+    ${ActivityFragmentFragmentDoc}`;
+export const GetActivityUsersDocument = `
     query GetActivityUsers($projects: [String!]) {
   users(last: 2000, projects: $projects) {
     edges {
@@ -2422,8 +2331,8 @@ export const GetActivityUsersDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetActivitiesDocument = new TypedDocumentString(`
+    `;
+export const GetActivitiesDocument = `
     query GetActivities($projectName: String!, $entityIds: [String!]!, $after: String, $first: Int, $before: String, $last: Int, $referenceTypes: [String!], $activityTypes: [String!]) {
   project(name: $projectName) {
     name
@@ -2451,49 +2360,8 @@ export const GetActivitiesDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment ActivityFragment on ActivityNode {
-  activityId
-  activityType
-  activityData
-  referenceType
-  referenceId
-  entityId
-  body
-  createdAt
-  updatedAt
-  author {
-    name
-    deleted
-    active
-    attrib {
-      fullName
-    }
-  }
-  files {
-    id
-    name
-    size
-    mime
-  }
-  origin {
-    id
-    name
-    label
-    type
-  }
-  reactions {
-    fullName
-    userName
-    reaction
-    timestamp
-  }
-  version {
-    attrib {
-      comment
-    }
-  }
-}`);
-export const GetEntitiesChecklistsDocument = new TypedDocumentString(`
+    ${ActivityFragmentFragmentDoc}`;
+export const GetEntitiesChecklistsDocument = `
     query GetEntitiesChecklists($projectName: String!, $entityIds: [String!]!) {
   project(name: $projectName) {
     name
@@ -2513,8 +2381,8 @@ export const GetEntitiesChecklistsDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetDetailsPanelFolderDocument = new TypedDocumentString(`
+    `;
+export const GetDetailsPanelFolderDocument = `
     query GetDetailsPanelFolder($projectName: String!, $entityId: String!) {
   project(name: $projectName) {
     projectName
@@ -2536,8 +2404,8 @@ export const GetDetailsPanelFolderDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetDetailsPanelRepresentationDocument = new TypedDocumentString(`
+    `;
+export const GetDetailsPanelRepresentationDocument = `
     query GetDetailsPanelRepresentation($projectName: String!, $entityId: String!) {
   project(name: $projectName) {
     representation(id: $entityId) {
@@ -2566,52 +2434,11 @@ export const GetDetailsPanelRepresentationDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment DetailsPanelFolderFragment on FolderNode {
-  id
-  name
-  label
-  path
-  folderType
-}
-fragment DetailsPanelProductFragment on ProductNode {
-  id
-  name
-  productType
-  latestVersion {
-    version
-  }
-}
-fragment DetailsPanelTaskFragment on TaskNode {
-  id
-  name
-  label
-  assignees
-  taskType
-  subtasks {
-    ...SubTaskFragment
-  }
-}
-fragment DetailsPanelVersionFragment on VersionNode {
-  id
-  thumbnailId
-  name
-  updatedAt
-  createdAt
-  productId
-  version
-  author
-}
-fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`);
-export const GetDetailsPanelTaskDocument = new TypedDocumentString(`
+    ${DetailsPanelVersionFragmentFragmentDoc}
+${DetailsPanelTaskFragmentFragmentDoc}
+${DetailsPanelProductFragmentFragmentDoc}
+${DetailsPanelFolderFragmentFragmentDoc}`;
+export const GetDetailsPanelTaskDocument = `
     query GetDetailsPanelTask($projectName: String!, $entityId: String!) {
   project(name: $projectName) {
     projectName
@@ -2647,34 +2474,10 @@ export const GetDetailsPanelTaskDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment DetailsPanelFolderFragment on FolderNode {
-  id
-  name
-  label
-  path
-  folderType
-}
-fragment DetailsPanelVersionFragment on VersionNode {
-  id
-  thumbnailId
-  name
-  updatedAt
-  createdAt
-  productId
-  version
-  author
-}
-fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`);
-export const GetDetailsPanelVersionDocument = new TypedDocumentString(`
+    ${SubTaskFragmentFragmentDoc}
+${DetailsPanelFolderFragmentFragmentDoc}
+${DetailsPanelVersionFragmentFragmentDoc}`;
+export const GetDetailsPanelVersionDocument = `
     query GetDetailsPanelVersion($projectName: String!, $entityId: String!) {
   project(name: $projectName) {
     projectName
@@ -2711,47 +2514,11 @@ export const GetDetailsPanelVersionDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment DetailsPanelFolderFragment on FolderNode {
-  id
-  name
-  label
-  path
-  folderType
-}
-fragment DetailsPanelProductFragment on ProductNode {
-  id
-  name
-  productType
-  latestVersion {
-    version
-  }
-}
-fragment DetailsPanelRepresentationFragment on RepresentationNode {
-  id
-  name
-  fileCount
-}
-fragment DetailsPanelTaskFragment on TaskNode {
-  id
-  name
-  label
-  assignees
-  taskType
-  subtasks {
-    ...SubTaskFragment
-  }
-}
-fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`);
-export const GetProductVersionsDocument = new TypedDocumentString(`
+    ${DetailsPanelProductFragmentFragmentDoc}
+${DetailsPanelFolderFragmentFragmentDoc}
+${DetailsPanelTaskFragmentFragmentDoc}
+${DetailsPanelRepresentationFragmentFragmentDoc}`;
+export const GetProductVersionsDocument = `
     query GetProductVersions($projectName: String!, $productId: String!) {
   project(name: $projectName) {
     product(id: $productId) {
@@ -2763,8 +2530,8 @@ export const GetProductVersionsDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetListItemsDocument = new TypedDocumentString(`
+    `;
+export const GetListItemsDocument = `
     query GetListItems($projectName: String!, $listId: String!, $first: Int, $after: String, $before: String, $last: Int, $sortBy: String, $filter: String) {
   project(name: $projectName) {
     entityLists(ids: [$listId]) {
@@ -2805,81 +2572,8 @@ export const GetListItemsDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment ListItemFragment on BaseNode {
-  active
-  name
-  updatedAt
-  createdAt
-  parents
-  ... on TaskNode {
-    label
-    status
-    tags
-    taskType
-    assignees
-    ownAttrib
-    hasReviewables
-    folderId
-    folder {
-      path
-      folderType
-    }
-    subtasks {
-      ...SubTaskFragment
-    }
-  }
-  ... on FolderNode {
-    label
-    status
-    tags
-    folderType
-    path
-    ownAttrib
-    hasReviewables
-    folderId: id
-  }
-  ... on ProductNode {
-    status
-    tags
-    productType
-    folderId
-    folder {
-      path
-      folderType
-    }
-  }
-  ... on VersionNode {
-    status
-    tags
-    hasReviewables
-    product {
-      id
-      name
-      productType
-      folderId
-      folder {
-        id
-        path
-        folderType
-      }
-    }
-    task {
-      name
-      taskType
-    }
-  }
-}
-fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}`);
-export const GetListsDocument = new TypedDocumentString(`
+    ${ListItemFragmentFragmentDoc}`;
+export const GetListsDocument = `
     query GetLists($projectName: String!, $first: Int!, $after: String, $filter: String) {
   project(name: $projectName) {
     entityLists(first: $first, after: $after, filter: $filter) {
@@ -2912,8 +2606,8 @@ export const GetListsDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetListsItemsForReviewSessionDocument = new TypedDocumentString(`
+    `;
+export const GetListsItemsForReviewSessionDocument = `
     query GetListsItemsForReviewSession($projectName: String!, $first: Int, $after: String, $ids: [String!]) {
   project(name: $projectName) {
     entityLists(
@@ -2941,27 +2635,8 @@ export const GetListsItemsForReviewSessionDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetFolderDeleteInfoDocument = new TypedDocumentString(`
-    query GetFolderDeleteInfo($projectName: String!, $folderIds: [String!]!) {
-  project(name: $projectName) {
-    folders(ids: $folderIds) {
-      edges {
-        node {
-          id
-          name
-          label
-          totalFolderCount
-          totalTaskCount
-          totalProductCount
-          totalVersionCount
-        }
-      }
-    }
-  }
-}
-    `);
-export const GetTasksByParentDocument = new TypedDocumentString(`
+    `;
+export const GetTasksByParentDocument = `
     query GetTasksByParent($projectName: String!, $parentIds: [String!]!, $filter: String, $folderFilter: String, $search: String) {
   project(name: $projectName) {
     name
@@ -2979,40 +2654,8 @@ export const GetTasksByParentDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}
-fragment TaskPropsFragment on TaskNode {
-  id
-  folderId
-  label
-  name
-  ownAttrib
-  status
-  tags
-  taskType
-  updatedAt
-  createdAt
-  active
-  assignees
-  allAttrib
-  hasReviewables
-  parents
-  subtasks {
-    ...SubTaskFragment
-  }
-  folder {
-    folderType
-  }
-}`);
-export const GetTasksListDocument = new TypedDocumentString(`
+    ${TaskPropsFragmentFragmentDoc}`;
+export const GetTasksListDocument = `
     query GetTasksList($projectName: String!, $folderIds: [String!], $taskIds: [String!], $filter: String, $folderFilter: String, $search: String, $after: String, $first: Int, $before: String, $last: Int, $sortBy: String) {
   project(name: $projectName) {
     name
@@ -3043,40 +2686,8 @@ export const GetTasksListDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment SubTaskFragment on SubTaskNode {
-  id
-  name
-  label
-  assignees
-  description
-  startDate
-  endDate
-  isDone
-}
-fragment TaskPropsFragment on TaskNode {
-  id
-  folderId
-  label
-  name
-  ownAttrib
-  status
-  tags
-  taskType
-  updatedAt
-  createdAt
-  active
-  assignees
-  allAttrib
-  hasReviewables
-  parents
-  subtasks {
-    ...SubTaskFragment
-  }
-  folder {
-    folderType
-  }
-}`);
-export const GetFolderProductsDocument = new TypedDocumentString(`
+    ${TaskPropsFragmentFragmentDoc}`;
+export const GetFolderProductsDocument = `
     query GetFolderProducts($projectName: String!, $folderId: String!) {
   project(name: $projectName) {
     products(folderIds: [$folderId], first: 1000) {
@@ -3100,15 +2711,15 @@ export const GetFolderProductsDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetProjectLatestDocument = new TypedDocumentString(`
+    `;
+export const GetProjectLatestDocument = `
     query GetProjectLatest($projectName: String!) {
   project(name: $projectName) {
     name
   }
 }
-    `);
-export const GetKanbanDocument = new TypedDocumentString(`
+    `;
+export const GetKanbanDocument = `
     query GetKanban($projects: [String!], $assignees: [String!]) {
   kanban(projects: $projects, assigneesAny: $assignees, last: 2000) {
     edges {
@@ -3118,28 +2729,8 @@ export const GetKanbanDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment KanbanFragment on KanbanNode {
-  id
-  projectName
-  projectCode
-  name
-  label
-  status
-  tags
-  taskType
-  assignees
-  updatedAt
-  createdAt
-  dueDate
-  thumbnailId
-  folderId
-  folderLabel
-  folderName
-  folderPath
-  hasReviewables
-  priority
-}`);
-export const GetKanbanProjectUsersDocument = new TypedDocumentString(`
+    ${KanbanFragmentFragmentDoc}`;
+export const GetKanbanProjectUsersDocument = `
     query GetKanbanProjectUsers($projects: [String!]) {
   users(last: 2000, projects: $projects) {
     edges {
@@ -3155,8 +2746,8 @@ export const GetKanbanProjectUsersDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetKanbanTasksDocument = new TypedDocumentString(`
+    `;
+export const GetKanbanTasksDocument = `
     query GetKanbanTasks($projects: [String!], $taskIds: [String!], $last: Int) {
   kanban(projects: $projects, taskIds: $taskIds, last: $last) {
     edges {
@@ -3166,28 +2757,8 @@ export const GetKanbanTasksDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment KanbanFragment on KanbanNode {
-  id
-  projectName
-  projectCode
-  name
-  label
-  status
-  tags
-  taskType
-  assignees
-  updatedAt
-  createdAt
-  dueDate
-  thumbnailId
-  folderId
-  folderLabel
-  folderName
-  folderPath
-  hasReviewables
-  priority
-}`);
-export const GetActiveUsersCountDocument = new TypedDocumentString(`
+    ${KanbanFragmentFragmentDoc}`;
+export const GetActiveUsersCountDocument = `
     query GetActiveUsersCount {
   users(last: 2000) {
     edges {
@@ -3198,8 +2769,8 @@ export const GetActiveUsersCountDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetAllAssigneesDocument = new TypedDocumentString(`
+    `;
+export const GetAllAssigneesDocument = `
     query GetAllAssignees {
   users(last: 2000) {
     edges {
@@ -3213,8 +2784,8 @@ export const GetAllAssigneesDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetAllProjectUsersAsAssigneeDocument = new TypedDocumentString(`
+    `;
+export const GetAllProjectUsersAsAssigneeDocument = `
     query GetAllProjectUsersAsAssignee($projectName: String) {
   users(last: 2000, projectName: $projectName) {
     edges {
@@ -3228,8 +2799,8 @@ export const GetAllProjectUsersAsAssigneeDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetLatestProductVersionDocument = new TypedDocumentString(`
+    `;
+export const GetLatestProductVersionDocument = `
     query GetLatestProductVersion($projectName: String!, $productId: String!) {
   project(name: $projectName) {
     versions(latestOnly: true, productIds: [$productId]) {
@@ -3248,8 +2819,8 @@ export const GetLatestProductVersionDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetProductsDocument = new TypedDocumentString(`
+    `;
+export const GetProductsDocument = `
     query GetProducts($projectName: String!, $productIds: [String!], $productFilter: String, $versionFilter: String, $taskFilter: String, $featuredVersionOrder: [String!], $search: String, $folderIds: [String!], $after: String, $first: Int, $before: String, $last: Int, $sortBy: String) {
   project(name: $projectName) {
     products(
@@ -3301,36 +2872,10 @@ export const GetProductsDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment VPFolder on FolderNode {
-  id
-  name
-  label
-  allAttrib
-}
-fragment PageInfo on PageInfo {
-  startCursor
-  endCursor
-  hasNextPage
-  hasPreviousPage
-}
-fragment VersionBase on VersionNode {
-  name
-  id
-  hasReviewables
-  parents
-  path
-  active
-  allAttrib
-  author
-  createdAt
-  status
-  tags
-  updatedAt
-  version
-  featuredVersionType
-  heroVersionId
-}`);
-export const GetVersionsDocument = new TypedDocumentString(`
+    ${PageInfoFragmentDoc}
+${VersionBaseFragmentDoc}
+${VpFolderFragmentDoc}`;
+export const GetVersionsDocument = `
     query GetVersions($projectName: String!, $productIds: [String!], $versionIds: [String!], $versionFilter: String, $productFilter: String, $taskFilter: String, $featuredOnly: [String!], $hasReviewables: Boolean, $folderIds: [String!], $search: String, $after: String, $first: Int, $before: String, $last: Int, $sortBy: String) {
   project(name: $projectName) {
     versions(
@@ -3362,56 +2907,9 @@ export const GetVersionsDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment VPFolder on FolderNode {
-  id
-  name
-  label
-  allAttrib
-}
-fragment PageInfo on PageInfo {
-  startCursor
-  endCursor
-  hasNextPage
-  hasPreviousPage
-}
-fragment VersionBase on VersionNode {
-  name
-  id
-  hasReviewables
-  parents
-  path
-  active
-  allAttrib
-  author
-  createdAt
-  status
-  tags
-  updatedAt
-  version
-  featuredVersionType
-  heroVersionId
-}
-fragment VersionExtended on VersionNode {
-  ...VersionBase
-  task {
-    id
-    taskType
-    label
-    name
-  }
-  product {
-    id
-    name
-    productType
-    productBaseType
-    allAttrib
-    folder {
-      id
-      ...VPFolder
-    }
-  }
-}`);
-export const GetVersionsByProductIdDocument = new TypedDocumentString(`
+    ${PageInfoFragmentDoc}
+${VersionExtendedFragmentDoc}`;
+export const GetVersionsByProductIdDocument = `
     query GetVersionsByProductId($projectName: String!, $productIds: [String!]!, $versionFilter: String, $taskFilter: String, $featuredOnly: [String!], $hasReviewables: Boolean, $sortBy: String, $first: Int, $last: Int, $after: String, $before: String) {
   project(name: $projectName) {
     versions(
@@ -3438,56 +2936,9 @@ export const GetVersionsByProductIdDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment VPFolder on FolderNode {
-  id
-  name
-  label
-  allAttrib
-}
-fragment PageInfo on PageInfo {
-  startCursor
-  endCursor
-  hasNextPage
-  hasPreviousPage
-}
-fragment VersionBase on VersionNode {
-  name
-  id
-  hasReviewables
-  parents
-  path
-  active
-  allAttrib
-  author
-  createdAt
-  status
-  tags
-  updatedAt
-  version
-  featuredVersionType
-  heroVersionId
-}
-fragment VersionExtended on VersionNode {
-  ...VersionBase
-  task {
-    id
-    taskType
-    label
-    name
-  }
-  product {
-    id
-    name
-    productType
-    productBaseType
-    allAttrib
-    folder {
-      id
-      ...VPFolder
-    }
-  }
-}`);
-export const GetInboxHasUnreadDocument = new TypedDocumentString(`
+    ${PageInfoFragmentDoc}
+${VersionExtendedFragmentDoc}`;
+export const GetInboxHasUnreadDocument = `
     query GetInboxHasUnread {
   inbox(
     last: 1
@@ -3503,8 +2954,8 @@ export const GetInboxHasUnreadDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetInboxMessagesDocument = new TypedDocumentString(`
+    `;
+export const GetInboxMessagesDocument = `
     query GetInboxMessages($last: Int, $active: Boolean, $important: Boolean, $cursor: String) {
   inbox(
     last: $last
@@ -3525,38 +2976,8 @@ export const GetInboxMessagesDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment MessageFragment on ActivityNode {
-  projectName
-  activityId
-  activityType
-  activityData
-  referenceType
-  referenceId
-  body
-  createdAt
-  updatedAt
-  active
-  read
-  author {
-    name
-    attrib {
-      fullName
-    }
-  }
-  origin {
-    id
-    name
-    label
-    type
-    subtype
-  }
-  parents {
-    type
-    name
-    label
-  }
-}`);
-export const GetInboxUnreadCountDocument = new TypedDocumentString(`
+    ${MessageFragmentFragmentDoc}`;
+export const GetInboxUnreadCountDocument = `
     query GetInboxUnreadCount($important: Boolean) {
   inbox(
     last: 500
@@ -3572,8 +2993,8 @@ export const GetInboxUnreadCountDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetMarketInstallEventsDocument = new TypedDocumentString(`
+    `;
+export const GetMarketInstallEventsDocument = `
     query GetMarketInstallEvents {
   events(last: 100, topics: ["addon.install_from_url"]) {
     edges {
@@ -3586,8 +3007,8 @@ export const GetMarketInstallEventsDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetInstallEventsDocument = new TypedDocumentString(`
+    `;
+export const GetInstallEventsDocument = `
     query GetInstallEvents($ids: [String!]!) {
   events(last: 100, ids: $ids) {
     edges {
@@ -3599,8 +3020,8 @@ export const GetInstallEventsDocument = new TypedDocumentString(`
     }
   }
 }
-    `);
-export const GetProgressTaskDocument = new TypedDocumentString(`
+    `;
+export const GetProgressTaskDocument = `
     query GetProgressTask($projectName: String!, $taskId: String!) {
   project(name: $projectName) {
     name
@@ -3609,42 +3030,8 @@ export const GetProgressTaskDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment ProgressTaskFragment on TaskNode {
-  projectName
-  id
-  name
-  label
-  taskType
-  status
-  assignees
-  updatedAt
-  active
-  hasReviewables
-  tags
-  attrib {
-    priority
-    endDate
-    resolutionHeight
-    resolutionWidth
-    fps
-  }
-  folder {
-    id
-    name
-    label
-    folderType
-    parents
-    status
-    updatedAt
-    parent {
-      id
-      name
-      label
-      parents
-    }
-  }
-}`);
-export const GetTasksProgressDocument = new TypedDocumentString(`
+    ${ProgressTaskFragmentFragmentDoc}`;
+export const GetTasksProgressDocument = `
     query GetTasksProgress($projectName: String!, $folderIds: [String!], $assignees: [String!], $assigneesAny: [String!], $tags: [String!], $tagsAny: [String!], $statuses: [String!], $taskTypes: [String!], $attributes: [AttributeFilterInput!]) {
   project(name: $projectName) {
     name
@@ -3668,41 +3055,7 @@ export const GetTasksProgressDocument = new TypedDocumentString(`
     }
   }
 }
-    fragment ProgressTaskFragment on TaskNode {
-  projectName
-  id
-  name
-  label
-  taskType
-  status
-  assignees
-  updatedAt
-  active
-  hasReviewables
-  tags
-  attrib {
-    priority
-    endDate
-    resolutionHeight
-    resolutionWidth
-    fps
-  }
-  folder {
-    id
-    name
-    label
-    folderType
-    parents
-    status
-    updatedAt
-    parent {
-      id
-      name
-      label
-      parents
-    }
-  }
-}`);
+    ${ProgressTaskFragmentFragmentDoc}`;
 
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -3741,9 +3094,6 @@ const injectedRtkApi = api.injectEndpoints({
     }),
     GetListsItemsForReviewSession: build.query<GetListsItemsForReviewSessionQuery, GetListsItemsForReviewSessionQueryVariables>({
       query: (variables) => ({ document: GetListsItemsForReviewSessionDocument, variables })
-    }),
-    GetFolderDeleteInfo: build.query<GetFolderDeleteInfoQuery, GetFolderDeleteInfoQueryVariables>({
-      query: (variables) => ({ document: GetFolderDeleteInfoDocument, variables })
     }),
     GetTasksByParent: build.query<GetTasksByParentQuery, GetTasksByParentQueryVariables>({
       query: (variables) => ({ document: GetTasksByParentDocument, variables })

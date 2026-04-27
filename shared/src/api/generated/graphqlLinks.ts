@@ -9,6 +9,14 @@
  * for this file to be re-created
  */
 // @ts-nocheck
+export class TypedDocumentString<TResult, TVariables> extends String {
+  constructor(private value: string, public __meta__?: Record<string, any>) {
+    super(value);
+  }
+  toString(): string | any {
+    return this.value;
+  }
+}
 
 import { api } from '@shared/api/base';
 export type Maybe<T> = T | null;
@@ -682,6 +690,7 @@ export type ProjectNode = {
   attrib: ProjectAttribType;
   bundle: ProjectBundleType;
   code: Scalars['String']['output'];
+  color?: Maybe<Scalars['String']['output']>;
   config?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   data?: Maybe<Scalars['String']['output']>;
@@ -694,6 +703,7 @@ export type ProjectNode = {
   folderTypes: Array<FolderType>;
   /** Return a list of folders. */
   folders: FoldersConnection;
+  label?: Maybe<Scalars['String']['output']>;
   library: Scalars['Boolean']['output'];
   /** List of project's link types */
   linkTypes: Array<LinkType>;
@@ -712,6 +722,7 @@ export type ProjectNode = {
   representation?: Maybe<RepresentationNode>;
   /** Return a list of representations. */
   representations: RepresentationsConnection;
+  skeleton: Scalars['Boolean']['output'];
   /** List of project's statuses */
   statuses: Array<Status>;
   /** List of tags in the project */
@@ -1033,6 +1044,7 @@ export type QueryProjectsArgs = {
   before?: InputMaybe<Scalars['String']['input']>;
   code?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
+  includeSkeleton?: Scalars['Boolean']['input'];
   last?: InputMaybe<Scalars['Int']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
