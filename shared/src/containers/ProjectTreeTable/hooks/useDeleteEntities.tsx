@@ -1,67 +1,64 @@
 import { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
 import { OperationWithRowId, useProjectTableContext, useProjectTableQueriesContext } from '@shared/containers'
 // TODO: confirmDelete uses prime react, so we should find a different solution
 import { confirmDelete } from '@shared/util'
 import { useProjectContext } from '@shared/context'
 import { toast } from 'react-toastify'
+import {
+  FolderDeleteInfo,
+  useLazyGetFolderDeleteInfoQuery,
+} from '@shared/api/queries/folders/getFolderDeleteInfo'
 import { EntityMap } from '../types'
-import { gqlApi } from '../../../api/generated'
-import { DeleteConfirmContent, FolderDeleteInfo, pluralize } from '../components/DeleteConfirmContent'
+import { DeleteConfirmContent, pluralize } from '../components/DeleteConfirmContent'
 
 type UseDeleteEntitiesProps = {
   onSuccess?: () => void
 }
 
+const buildChildrenDetails = (
+  topLevelFolders: (EntityMap & { rowId: string })[],
+  folderInfo: FolderDeleteInfo[],
+): string[] => {
+  if (topLevelFolders.length === 0) return []
+  const folderInfoMap = new Map(folderInfo.map((f) => [f.id, f]))
+  const many = topLevelFolders.length > 1
+  const details: string[] = []
+
+  for (const folder of topLevelFolders) {
+    const info = folderInfoMap.get(folder.id)
+    const prefix = many ? `"${folder.label || folder.name}" contains ` : 'Contains '
+    const hasDescendants =
+      info &&
+      (info.totalFolderCount > 0 ||
+        info.totalTaskCount > 0 ||
+        info.totalProductCount > 0 ||
+        info.totalVersionCount > 0)
+
+    if (hasDescendants) {
+      const parts: string[] = []
+      if (info.totalFolderCount > 0) parts.push(pluralize(info.totalFolderCount, 'child folder'))
+      if (info.totalTaskCount > 0) parts.push(pluralize(info.totalTaskCount, 'task'))
+      if (info.totalProductCount > 0) parts.push(pluralize(info.totalProductCount, 'product'))
+      if (info.totalVersionCount > 0) parts.push(pluralize(info.totalVersionCount, 'version'))
+      details.push(`${prefix}${parts.join(', ')}`)
+    } else {
+      if ('hasChildren' in folder && folder.hasChildren) {
+        details.push(`${prefix}child folders`)
+      }
+      if ('taskNames' in folder && folder.taskNames && folder.taskNames.length > 0) {
+        details.push(`${prefix}${pluralize(folder.taskNames.length, 'task')}`)
+      }
+    }
+  }
+
+  return details
+}
+
 const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
   const { updateEntities } = useProjectTableQueriesContext()
   const { projectName } = useProjectContext()
-  const dispatch = useDispatch()
-
   const { getEntityById } = useProjectTableContext()
-
-  const getValidEntity = (entityId: string): (EntityMap & { rowId: string }) | null => {
-    const entity = getEntityById(entityId) as EntityMap & { rowId: string }
-    return entity || null
-  }
-
-  const fetchFolderDeleteInfo = async (
-    folderIds: string[],
-  ): Promise<Map<string, FolderDeleteInfo>> => {
-    const map = new Map<string, FolderDeleteInfo>()
-    if (!folderIds.length || !projectName) return map
-
-    try {
-      const result = await dispatch(
-        gqlApi.endpoints.GetFolderDeleteInfo.initiate({
-          projectName,
-          folderIds,
-        }),
-      )
-
-      const edges = result?.data?.project?.folders?.edges
-      if (edges) {
-        for (const edge of edges) {
-          const node = edge.node
-          if (node) {
-            map.set(node.id, {
-              id: node.id,
-              name: node.name,
-              label: node.label,
-              totalFolderCount: node.totalFolderCount ?? 0,
-              totalTaskCount: node.totalTaskCount ?? 0,
-              totalProductCount: node.totalProductCount ?? 0,
-              totalVersionCount: node.totalVersionCount ?? 0,
-            })
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to fetch folder delete info, falling back to local data', error)
-    }
-
-    return map
-  }
+  const [fetchFolderDeleteInfo] = useLazyGetFolderDeleteInfoQuery()
 
   return useCallback(
     async (entityIds: string[]) => {
@@ -72,9 +69,8 @@ const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
 
       const fullEntities: (EntityMap & { rowId: string })[] = []
       const addedEntityIds = new Set<string>()
-
       for (const id of entityIds) {
-        const entity = getValidEntity(id)
+        const entity = getEntityById(id) as (EntityMap & { rowId: string }) | undefined
         if (entity && !addedEntityIds.has(entity.id)) {
           fullEntities.push(entity)
           addedEntityIds.add(entity.id)
@@ -140,14 +136,24 @@ const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
 
       const topLevelFolders = topLevelEntities.filter((e) => e.entityType === 'folder')
 
+      let childrenDetails: string[] = []
+      if (topLevelFolders.length > 0 && projectName) {
+        try {
+          const folderInfo = await fetchFolderDeleteInfo({
+            projectName,
+            folderIds: topLevelFolders.map((f) => f.id),
+          }).unwrap()
+          childrenDetails = buildChildrenDetails(topLevelFolders, folderInfo)
+        } catch (error) {
+          console.warn('Failed to fetch folder delete info, falling back to local data', error)
+          childrenDetails = buildChildrenDetails(topLevelFolders, [])
+        }
+      }
+
       confirmDelete({
         label: 'folders and tasks',
         message: (
-          <DeleteConfirmContent
-            entityLabel={entityLabel}
-            topLevelFolders={topLevelFolders}
-            fetchDeleteInfo={fetchFolderDeleteInfo}
-          />
+          <DeleteConfirmContent entityLabel={entityLabel} childrenDetails={childrenDetails} />
         ),
         accept: deleteEntities,
         onError: (error: any) => {
@@ -166,7 +172,7 @@ const useDeleteEntities = ({ onSuccess }: UseDeleteEntitiesProps) => {
         deleteLabel: 'Delete forever',
       })
     },
-    [getEntityById, updateEntities, onSuccess, projectName, dispatch],
+    [getEntityById, updateEntities, onSuccess, projectName, fetchFolderDeleteInfo],
   )
 }
 
