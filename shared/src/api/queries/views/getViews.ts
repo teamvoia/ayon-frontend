@@ -1,5 +1,10 @@
 import { ListViewsApiResponse, viewsApi } from '@shared/api/generated'
-import { DefinitionsFromApi, OverrideResultType, TagTypesFromApi } from '@reduxjs/toolkit/query'
+import {
+  DefinitionsFromApi,
+  OverrideResultType,
+  TagDescription,
+  TagTypesFromApi,
+} from '@reduxjs/toolkit/query'
 
 export const getScopeTag = (viewType: string, projectName?: string) => {
   return {
@@ -23,8 +28,14 @@ export const getViewsApi = viewsApi.enhanceEndpoints<TagTypes, UpdatedDefinition
   endpoints: {
     listViews: {
       transformResponse: (response: ListViewsApiResponse) => response?.views || [],
-      providesTags: (result, _e, { viewType, projectName }) =>
-        result ? [VIEW_LIST_TAG, getScopeTag(viewType, projectName)] : [VIEW_LIST_TAG],
+      providesTags: (result, _e, { viewType, projectName }): TagDescription<TagTypes>[] =>
+        result
+          ? [
+              VIEW_LIST_TAG,
+              getScopeTag(viewType, projectName),
+              ...result.map((v) => ({ type: 'view' as const, id: v.id })),
+            ]
+          : [VIEW_LIST_TAG],
       transformErrorResponse: (error: any) => error.data?.detail,
     },
     getWorkingView: {
