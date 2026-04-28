@@ -8,6 +8,7 @@ import OrderedListWidget from './OrderedListWidget'
 import { isEqual } from 'lodash'
 
 const StyledDropdown = styled(Dropdown)`
+  max-width: 800px;
   button > div > div:has(span) {
     width: 0;
   }
@@ -219,6 +220,8 @@ const SelectWidget = (props: $Any) => {
         value={(value as string[]) || []}
         options={options}
         onChange={setValue as (value: string[]) => void}
+        placeholder={props.schema?.placeholder}
+        disabled={props.schema?.disabled}
       />
     )
   }

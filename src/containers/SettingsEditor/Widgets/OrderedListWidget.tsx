@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Icon, Dropdown } from '@ynput/ayon-react-components'
+import { Icon, Dropdown, DropdownProps } from '@ynput/ayon-react-components'
 import styled from 'styled-components'
 import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay } from '@dnd-kit/core'
 import {
@@ -17,6 +17,13 @@ const Container = styled.div`
   flex-direction: column;
   gap: 2px;
   width: 100%;
+  max-width: 800px;
+`
+
+const StyledDropdown = styled(Dropdown)`
+  button > div > div:has(span) {
+    width: 0;
+  }
 `
 
 const ItemRow = styled.div`
@@ -109,9 +116,19 @@ export interface OrderedListWidgetProps {
   value: string[]
   options: { label: string; value: string }[]
   onChange: (value: string[]) => void
+  placeholder?: string
+  disabled?: boolean
+  dropdownProps?: Partial<DropdownProps>
 }
 
-const OrderedListWidget = ({ value, options, onChange }: OrderedListWidgetProps) => {
+const OrderedListWidget = ({
+  value,
+  options,
+  onChange,
+  placeholder = 'Select applications',
+  disabled,
+  dropdownProps,
+}: OrderedListWidgetProps) => {
   const [draggedId, setDraggedId] = useState<string | null>(null)
 
   const getLabel = (val: string) => {
@@ -128,6 +145,17 @@ const OrderedListWidget = ({ value, options, onChange }: OrderedListWidgetProps)
 
   const removeItem = (item: string) => {
     onChange(value.filter((v) => v !== item))
+  }
+
+  const handleSelectAll = () => {
+    const all = options.map((o) => o.value)
+    const kept = value.filter((v) => all.includes(v))
+    const added = all.filter((v) => !value.includes(v))
+    onChange([...kept, ...added])
+  }
+
+  const handleClear = () => {
+    onChange([])
   }
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -150,13 +178,19 @@ const OrderedListWidget = ({ value, options, onChange }: OrderedListWidgetProps)
 
   return (
     <Container data-tooltip="">
-      <Dropdown
+      <StyledDropdown
         widthExpand
         options={options}
         value={value}
         onSelectionChange={handleSelectionChange}
         multiSelect
-        placeholder="Select applications"
+        placeholder={placeholder}
+        disabled={disabled}
+        search={options.length > 10}
+        onSelectAll={options.length > 10 ? handleSelectAll : undefined}
+        onClear={value.length > 0 ? handleClear : undefined}
+        clearTooltip="Clear selection"
+        {...dropdownProps}
       />
 
       {value.length > 0 && (
