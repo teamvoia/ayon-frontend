@@ -364,35 +364,62 @@ const SearchFilterWrapper: FC<SearchFilterWrapperProps> = ({
     input.select()
   }
 
-  // While editing a search chip, intercept Enter on the dropdown input so the
-  // chip's value gets updated (or removed if input is cleared) instead of the
-  // default behavior that would create an additional chip or toggle nothing.
-  const attachSearchEditEnterHandler = (chipId: string) => {
+  // Commit the current dropdown input value to the chip being edited.
+  // Empty input removes the chip; non-empty input replaces its single value.
+  const commitSearchChipEdit = (chipId: string, input: HTMLInputElement) => {
+    const text = input.value.trim()
+    const currentFilters = localFiltersRef.current
+    if (!text) {
+      handleFinish(currentFilters.filter((f) => f.id !== chipId))
+    } else {
+      const updated = currentFilters.map((f) =>
+        f.id === chipId ? { ...f, values: [{ id: text, label: text }] } : f,
+      )
+      handleFinish(updated)
+    }
+    editingSearchChipRef.current = null
+    searchFilterRef.current?.close()
+  }
+
+  // While editing a search chip, intercept Enter on the dropdown input AND clicks
+  // on the dropdown's Confirm button so the chip's value gets updated (or removed
+  // if cleared). Without these intercepts the default Confirm path passes the
+  // chip's original values to onConfirmAndClose, discarding the typed edit.
+  const attachSearchEditCommitHandlers = (chipId: string) => {
     const container = searchFilterRef.current?.getContainerElement()
     const input = container?.querySelector('ul .search input') as HTMLInputElement | null
-    if (!input) return
+    if (!container || !input) return
+
+    // Confirm button: match the child <span icon="check"> and climb to <button>.
+    // textContent equality fails because it concatenates the icon's "check" text.
+    const confirmBtn = container
+      .querySelector('.toolbar span[icon="check"]')
+      ?.closest('button') as HTMLButtonElement | null
+
+    const cleanup = () => {
+      input.removeEventListener('keydown', onKeyDown, true)
+      confirmBtn?.removeEventListener('click', onConfirmClick, true)
+    }
 
     const onKeyDown = (ev: KeyboardEvent) => {
       if (ev.key !== 'Enter') return
       if (editingSearchChipRef.current !== chipId) return
       ev.preventDefault()
       ev.stopPropagation()
-      const text = input.value.trim()
-      const currentFilters = localFiltersRef.current
-      if (!text) {
-        handleFinish(currentFilters.filter((f) => f.id !== chipId))
-      } else {
-        const updated = currentFilters.map((f) =>
-          f.id === chipId ? { ...f, values: [{ id: text, label: text }] } : f,
-        )
-        handleFinish(updated)
-      }
-      editingSearchChipRef.current = null
-      input.removeEventListener('keydown', onKeyDown, true)
-      searchFilterRef.current?.close()
+      cleanup()
+      commitSearchChipEdit(chipId, input)
+    }
+
+    const onConfirmClick = (ev: MouseEvent) => {
+      if (editingSearchChipRef.current !== chipId) return
+      ev.preventDefault()
+      ev.stopPropagation()
+      cleanup()
+      commitSearchChipEdit(chipId, input)
     }
 
     input.addEventListener('keydown', onKeyDown, true) // capture phase: run before React's bubble handler
+    confirmBtn?.addEventListener('click', onConfirmClick, true)
   }
 
   // Intercept clicks on filter chips (search prefill + datetime edit dialog)
@@ -417,7 +444,7 @@ const SearchFilterWrapper: FC<SearchFilterWrapperProps> = ({
         // Wait for the dropdown to render (after default click handlers fire)
         requestAnimationFrame(() => {
           prefillDropdownSearch(text)
-          attachSearchEditEnterHandler(chipId)
+          attachSearchEditCommitHandlers(chipId)
         })
       }
       return
