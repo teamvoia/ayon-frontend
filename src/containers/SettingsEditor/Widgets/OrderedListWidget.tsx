@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { Icon, Dropdown } from '@ynput/ayon-react-components'
 import styled from 'styled-components'
-import {
-  DndContext,
-  closestCenter,
-  DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-} from '@dnd-kit/core'
+import { DndContext, closestCenter, DragEndEvent, DragStartEvent, DragOverlay } from '@dnd-kit/core'
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -16,6 +10,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { createPortal } from 'react-dom'
+import clsx from 'clsx'
 
 const Container = styled.div`
   display: flex;
@@ -24,7 +19,7 @@ const Container = styled.div`
   width: 100%;
 `
 
-const ItemRow = styled.div<{ $isSelected?: boolean }>`
+const ItemRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
@@ -33,7 +28,11 @@ const ItemRow = styled.div<{ $isSelected?: boolean }>`
   cursor: pointer;
 
   &:hover {
-    background: var(--md-sys-color-surface-container-highest);
+    background: var(--md-sys-color-surface-container-hover);
+  }
+
+  &.dragging {
+    visibility: hidden;
   }
 `
 
@@ -72,9 +71,11 @@ const SortableItem = ({
   id,
   label,
   onRemove,
+  isDragging,
 }: {
   id: string
   label: string
+  isDragging: boolean
   onRemove: () => void
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
@@ -89,7 +90,7 @@ const SortableItem = ({
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-      <ItemRow $isSelected>
+      <ItemRow className={clsx({ dragging: isDragging })}>
         <DragHandle {...listeners} icon="drag_indicator" />
         <ItemLabel>{label}</ItemLabel>
         <ActionIcon
@@ -173,6 +174,7 @@ const OrderedListWidget = ({ value, options, onChange }: OrderedListWidgetProps)
                   id={item}
                   label={getLabel(item)}
                   onRemove={() => removeItem(item)}
+                  isDragging={draggedId === item}
                 />
               ))}
             </SortableContext>
@@ -180,7 +182,6 @@ const OrderedListWidget = ({ value, options, onChange }: OrderedListWidgetProps)
               createPortal(
                 <DragOverlay>
                   <ItemRow
-                    $isSelected
                     style={{
                       background: 'var(--md-sys-color-surface-container-high)',
                       boxShadow: '0 0 4px 1px rgba(0, 0, 0, 0.1)',
