@@ -33,7 +33,9 @@ export const getViewsApi = viewsApi.enhanceEndpoints<TagTypes, UpdatedDefinition
           ? [
               VIEW_LIST_TAG,
               getScopeTag(viewType, projectName),
-              ...result.map((v) => ({ type: 'view' as const, id: v.id })),
+              ...result
+                .filter((v) => v.id != null)
+                .map((v) => ({ type: 'view' as const, id: v.id })),
             ]
           : [VIEW_LIST_TAG],
       transformErrorResponse: (error: any) => error.data?.detail,
