@@ -5,8 +5,6 @@ import {
   foldersApi,
   SearchFoldersApiArg,
   GetTasksListQueryVariables,
-  GetSearchFolderIdsQueryVariables,
-  GetSearchFolderIdsQuery,
 } from '@shared/api/generated'
 import { PubSub } from '@shared/util'
 import { EditorTaskNode } from '@shared/containers/ProjectTreeTable'
@@ -319,26 +317,27 @@ const injectedApi = enhancedApi.injectEndpoints({
         }
       },
     }),
-    // Derive visible folder IDs from tasks matching a search string.
-    // Uses the GraphQL tasks resolver which splits search on commas for OR semantics,
-    // unlike the REST searchFolders endpoint which ANDs all terms.
-    getSearchFolderIdsByTasks: build.query<
+    // Derive folder IDs from tasks matching a search string. Reuses the existing
+    // GetTasksList query — GraphQL tasks resolver splits search on commas for OR
+    // semantics, unlike the REST searchFolders endpoint which ANDs all terms.
+    getFolderIdsByTaskSearch: build.query<
       string[],
       { projectName: string; search?: string; filter?: string; folderFilter?: string }
     >({
       async queryFn({ projectName, search, filter, folderFilter }, { dispatch }) {
         try {
           const result = await dispatch(
-            gqlApi.endpoints.GetSearchFolderIds.initiate({
+            enhancedApi.endpoints.GetTasksList.initiate({
               projectName,
               search,
               filter,
               folderFilter,
-            } as GetSearchFolderIdsQueryVariables),
+              first: 10000,
+            } as GetTasksListQueryVariables),
           )
-          const typed = result.data as GetSearchFolderIdsQuery | undefined
-          const edges = typed?.project?.tasks?.edges || []
-          const folderIds: string[] = [...new Set(edges.map((e) => e.node.folderId))]
+          if (result.error) throw result.error
+          const tasks = result.data?.tasks || []
+          const folderIds: string[] = [...new Set(tasks.map((t) => t.folderId).filter(Boolean) as string[])]
           return { data: folderIds }
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e)
@@ -640,7 +639,7 @@ const injectedApi = enhancedApi.injectEndpoints({
 export const {
   useGetOverviewTasksByFoldersQuery,
   useGetSearchFoldersQuery,
-  useGetSearchFolderIdsByTasksQuery,
+  useGetFolderIdsByTaskSearchQuery,
   useGetTasksListQuery,
   useGetTasksListInfiniteInfiniteQuery,
   useLazyGetTasksByParentQuery,

@@ -2,7 +2,7 @@ import {
   useGetGroupedTasksListQuery,
   useGetOverviewTasksByFoldersQuery,
   useGetSearchFoldersQuery,
-  useGetSearchFolderIdsByTasksQuery,
+  useGetFolderIdsByTaskSearchQuery,
   useGetTasksListInfiniteInfiniteQuery,
 } from '@shared/api'
 import type { FolderListItem, GetGroupedTasksListArgs, EntityGroup, QueryFilter } from '@shared/api'
@@ -130,14 +130,14 @@ export const useFetchOverviewData = ({
     },
   )
 
-  // When text search is active, also derive folder IDs from matching tasks via GraphQL.
-  // GraphQL tasks resolver splits search on commas (OR per chip) unlike the REST
-  // searchFolders endpoint which ANDs all terms — fixes multi-folder search in hierarchy.
+  // When text search is active, derive folder IDs from matching tasks (via existing
+  // GetTasksList query). GraphQL tasks resolver splits search on commas (OR per chip)
+  // unlike REST searchFolders which ANDs all terms — fixes multi-folder search.
   const {
     data: folderIdsBySearch,
     isUninitialized: isUninitializedFolderIdsBySearch,
     refetch: refetchFolderIdsBySearch,
-  } = useGetSearchFolderIdsByTasksQuery(
+  } = useGetFolderIdsByTaskSearchQuery(
     {
       projectName,
       search: taskFilters.search,
