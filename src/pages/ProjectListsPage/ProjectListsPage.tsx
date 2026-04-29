@@ -350,7 +350,6 @@ const ProjectLists: FC<ProjectListsProps> = ({
                   {pageDisplayStyle === 'table' && (
                     <>
                       <OverviewActions items={['undo', 'redo', deleteListItemAction]} />
-                      {/*@ts-expect-error - we do not support product right now*/}
                       <ListItemsFilter
                         entityType={selectedList.entityType}
                         projectName={projectName}
