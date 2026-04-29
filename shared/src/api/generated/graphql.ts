@@ -1727,6 +1727,14 @@ export type ListItemFragmentFragment =
   | ListItemFragment_WorkfileNode_Fragment
 ;
 
+export type GetFolderDeleteInfoQueryVariables = Exact<{
+  projectName: Scalars['String']['input'];
+  folderIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type GetFolderDeleteInfoQuery = { __typename?: 'Query', project: { __typename?: 'ProjectNode', folders: { __typename?: 'FoldersConnection', edges: Array<{ __typename?: 'FolderEdge', node: { __typename?: 'FolderNode', id: string, name: string, label?: string | null, totalFolderCount: number, totalTaskCount: number, totalProductCount: number, totalVersionCount: number } }> } } };
+
 export type GetTasksByParentQueryVariables = Exact<{
   projectName: Scalars['String']['input'];
   parentIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
@@ -2946,6 +2954,25 @@ export const GetListsItemsForReviewSessionDocument = new TypedDocumentString(`
   }
 }
     `);
+export const GetFolderDeleteInfoDocument = new TypedDocumentString(`
+    query GetFolderDeleteInfo($projectName: String!, $folderIds: [String!]!) {
+  project(name: $projectName) {
+    folders(ids: $folderIds) {
+      edges {
+        node {
+          id
+          name
+          label
+          totalFolderCount
+          totalTaskCount
+          totalProductCount
+          totalVersionCount
+        }
+      }
+    }
+  }
+}
+    `);
 export const GetTasksByParentDocument = new TypedDocumentString(`
     query GetTasksByParent($projectName: String!, $parentIds: [String!]!, $filter: String, $folderFilter: String, $search: String) {
   project(name: $projectName) {
@@ -3726,6 +3753,9 @@ const injectedRtkApi = api.injectEndpoints({
     }),
     GetListsItemsForReviewSession: build.query<GetListsItemsForReviewSessionQuery, GetListsItemsForReviewSessionQueryVariables>({
       query: (variables) => ({ document: GetListsItemsForReviewSessionDocument, variables })
+    }),
+    GetFolderDeleteInfo: build.query<GetFolderDeleteInfoQuery, GetFolderDeleteInfoQueryVariables>({
+      query: (variables) => ({ document: GetFolderDeleteInfoDocument, variables })
     }),
     GetTasksByParent: build.query<GetTasksByParentQuery, GetTasksByParentQueryVariables>({
       query: (variables) => ({ document: GetTasksByParentDocument, variables })
