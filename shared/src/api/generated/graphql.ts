@@ -1682,7 +1682,7 @@ export type GetListItemsQuery = { __typename?: 'Query', project: { __typename?: 
                 | { __typename?: 'ProductNode', status: string, tags: Array<string>, productType: string, folderId: string, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, folder: { __typename?: 'FolderNode', path?: string | null, folderType: string } }
                 | { __typename?: 'RepresentationNode', active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string> }
                 | { __typename?: 'TaskNode', label?: string | null, status: string, tags: Array<string>, taskType: string, assignees: Array<string>, ownAttrib: Array<string>, hasReviewables: boolean, folderId: string, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, folder: { __typename?: 'FolderNode', path?: string | null, folderType: string }, subtasks: Array<{ __typename?: 'SubTaskNode', id: string, name: string, label: string, assignees: Array<string>, description?: string | null, startDate?: any | null, endDate?: any | null, isDone: boolean }> }
-                | { __typename?: 'VersionNode', status: string, tags: Array<string>, hasReviewables: boolean, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, product: { __typename?: 'ProductNode', id: string, name: string, productType: string, folderId: string, folder: { __typename?: 'FolderNode', id: string, path?: string | null, folderType: string } }, task?: { __typename?: 'TaskNode', name: string, taskType: string } | null }
+                | { __typename?: 'VersionNode', status: string, tags: Array<string>, hasReviewables: boolean, author?: string | null, version: number, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, product: { __typename?: 'ProductNode', id: string, name: string, productType: string, folderId: string, folder: { __typename?: 'FolderNode', id: string, path?: string | null, folderType: string } }, task?: { __typename?: 'TaskNode', name: string, taskType: string } | null }
                 | { __typename?: 'WorkfileNode', active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string> }
                | null }> } } }> } } };
 
@@ -1714,7 +1714,7 @@ type ListItemFragment_RepresentationNode_Fragment = { __typename?: 'Representati
 
 type ListItemFragment_TaskNode_Fragment = { __typename?: 'TaskNode', label?: string | null, status: string, tags: Array<string>, taskType: string, assignees: Array<string>, ownAttrib: Array<string>, hasReviewables: boolean, folderId: string, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, folder: { __typename?: 'FolderNode', path?: string | null, folderType: string }, subtasks: Array<{ __typename?: 'SubTaskNode', id: string, name: string, label: string, assignees: Array<string>, description?: string | null, startDate?: any | null, endDate?: any | null, isDone: boolean }> };
 
-type ListItemFragment_VersionNode_Fragment = { __typename?: 'VersionNode', status: string, tags: Array<string>, hasReviewables: boolean, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, product: { __typename?: 'ProductNode', id: string, name: string, productType: string, folderId: string, folder: { __typename?: 'FolderNode', id: string, path?: string | null, folderType: string } }, task?: { __typename?: 'TaskNode', name: string, taskType: string } | null };
+type ListItemFragment_VersionNode_Fragment = { __typename?: 'VersionNode', status: string, tags: Array<string>, hasReviewables: boolean, author?: string | null, version: number, active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string>, product: { __typename?: 'ProductNode', id: string, name: string, productType: string, folderId: string, folder: { __typename?: 'FolderNode', id: string, path?: string | null, folderType: string } }, task?: { __typename?: 'TaskNode', name: string, taskType: string } | null };
 
 type ListItemFragment_WorkfileNode_Fragment = { __typename?: 'WorkfileNode', active: boolean, name: string, updatedAt: any, createdAt: any, parents: Array<string> };
 
@@ -2122,6 +2122,8 @@ export const ListItemFragmentFragmentDoc = new TypedDocumentString(`
     status
     tags
     hasReviewables
+    author
+    version
     product {
       id
       name
@@ -2864,6 +2866,8 @@ export const GetListItemsDocument = new TypedDocumentString(`
     status
     tags
     hasReviewables
+    author
+    version
     product {
       id
       name
