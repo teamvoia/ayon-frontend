@@ -2,7 +2,6 @@ import {
   useGetGroupedTasksListQuery,
   useGetOverviewTasksByFoldersQuery,
   useGetSearchFoldersQuery,
-  useGetFolderIdsByTaskSearchQuery,
   useGetTasksListInfiniteInfiniteQuery,
 } from '@shared/api'
 import type { FolderListItem, GetGroupedTasksListArgs, EntityGroup, QueryFilter } from '@shared/api'
@@ -130,25 +129,6 @@ export const useFetchOverviewData = ({
     },
   )
 
-  // When text search is active, derive folder IDs from matching tasks (via existing
-  // GetTasksList query). GraphQL tasks resolver splits search on commas (OR per chip)
-  // unlike REST searchFolders which ANDs all terms — fixes multi-folder search.
-  const {
-    data: folderIdsBySearch,
-    isUninitialized: isUninitializedFolderIdsBySearch,
-    refetch: refetchFolderIdsBySearch,
-  } = useGetFolderIdsByTaskSearchQuery(
-    {
-      projectName,
-      search: taskFilters.search,
-      filter: taskFilters.filterString,
-      folderFilter: folderFilters.filterString,
-    },
-    {
-      skip: !taskFilters.search || !folders.length || (!showHierarchy && !isFlatFolderView),
-    },
-  )
-
   // create a list of folders that are current visible in the table
   // root folders are always visible
   // then a folder is visible if it's parent is expanded
@@ -202,19 +182,12 @@ export const useFetchOverviewData = ({
     }
 
     // If we have task filters and folders to filter
-    const hasFilteredFolders =
-      (!isUninitialized && foldersByTaskFilter !== undefined) ||
-      (!isUninitializedFolderIdsBySearch && folderIdsBySearch !== undefined)
-
-    if (hasFilteredFolders && folders.length) {
+    if (!isUninitialized && foldersByTaskFilter && folders.length) {
       // Create a set for efficient lookups of filtered folder IDs
       const relevantFolderIds = new Set<string>()
 
-      // First pass: union REST filter results + GraphQL search results (comma-OR semantics)
-      for (const folderId of foldersByTaskFilter ?? []) {
-        relevantFolderIds.add(folderId)
-      }
-      for (const folderId of folderIdsBySearch ?? []) {
+      // First pass: Add all folders from the task filter
+      for (const folderId of foldersByTaskFilter) {
         relevantFolderIds.add(folderId)
       }
 
@@ -296,7 +269,7 @@ export const useFetchOverviewData = ({
     }
 
     return map
-  }, [folders, foldersByTaskFilter, folderIdsBySearch, isUninitialized, isUninitializedFolderIdsBySearch, selectedFolders, foldersLinks])
+  }, [folders, foldersByTaskFilter, isUninitialized, selectedFolders, foldersLinks, isFlatFolderView])
 
   // calculate partial loading states
   const loadingTasksForParents = useMemo(() => {
@@ -495,10 +468,7 @@ export const useFetchOverviewData = ({
       }
 
       if (tasksByFolderMap.has(folderId)) {
-        const existing = tasksByFolderMap.get(folderId)!
-        if (!existing.includes(taskId)) {
-          existing.push(taskId)
-        }
+        tasksByFolderMap.get(folderId)!.push(taskId)
       } else {
         tasksByFolderMap.set(folderId, [taskId])
       }
@@ -550,7 +520,6 @@ export const useFetchOverviewData = ({
     if (!isUninitializedFolders) refetchFolders()
     if (!isUninitializedExpandedFoldersTasks) refetchExpandedFoldersTasks()
     if (!isUninitializedTasksFolders) refetchTasksFolders()
-    if (!isUninitializedFolderIdsBySearch) refetchFolderIdsBySearch()
     if (!isUninitializedTasksList) refetchTasksList()
     if (!isUninitializedGroupedTasks) refetchGroupedTasks()
     if (!isUninitializedFoldersLinks) refetchFoldersLinks()

@@ -317,34 +317,6 @@ const injectedApi = enhancedApi.injectEndpoints({
         }
       },
     }),
-    // Derive folder IDs from tasks matching a search string. Reuses the existing
-    // GetTasksList query — GraphQL tasks resolver splits search on commas for OR
-    // semantics, unlike the REST searchFolders endpoint which ANDs all terms.
-    getFolderIdsByTaskSearch: build.query<
-      string[],
-      { projectName: string; search?: string; filter?: string; folderFilter?: string }
-    >({
-      async queryFn({ projectName, search, filter, folderFilter }, { dispatch }) {
-        try {
-          const result = await dispatch(
-            enhancedApi.endpoints.GetTasksList.initiate({
-              projectName,
-              search,
-              filter,
-              folderFilter,
-              first: 10000,
-            } as GetTasksListQueryVariables),
-          )
-          if (result.error) throw result.error
-          const tasks = result.data?.tasks || []
-          const folderIds: string[] = [...new Set(tasks.map((t) => t.folderId).filter(Boolean) as string[])]
-          return { data: folderIds }
-        } catch (e) {
-          const msg = e instanceof Error ? e.message : String(e)
-          return { error: { status: 'FETCH_ERROR', error: msg } as FetchBaseQueryError }
-        }
-      },
-    }),
     // Add new infinite query endpoint for tasks list
     getTasksListInfinite: build.infiniteQuery<
       GetTasksListResult,
@@ -639,7 +611,6 @@ const injectedApi = enhancedApi.injectEndpoints({
 export const {
   useGetOverviewTasksByFoldersQuery,
   useGetSearchFoldersQuery,
-  useGetFolderIdsByTaskSearchQuery,
   useGetTasksListQuery,
   useGetTasksListInfiniteInfiniteQuery,
   useLazyGetTasksByParentQuery,
